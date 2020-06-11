@@ -1,0 +1,18 @@
+{
+  "name": "ihc-todo-list",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/dioneijd/ihc-todo-list.git",
+  "author": "Dionei J. Delangolo <dionei.jd@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

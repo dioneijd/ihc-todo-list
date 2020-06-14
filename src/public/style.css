@@ -49,9 +49,32 @@ body {
     background-color: seagreen;
 }
 
-#listHeader h1 {
-    color: seashell;
+#listHeader input[type="text"] {
+    color: white;
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    font-size: 35px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2)  ;
+    text-align: center;
+    text-transform: uppercase;
+
 }
+
+#listHeader input[type="text"]:hover {
+    border-color: darkgreen;
+    border-style: dotted;
+}
+
+
+#listHeader input[type="text"]:focus {
+    color: darkgreen;
+    background-color: white;
+    text-shadow: none;
+}
+
 
 
 

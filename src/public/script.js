@@ -1,7 +1,7 @@
 const LOCAL_STORE_STATE = 'state_data'
 const UL_ELEMENT = document.querySelector('#todoList')
-const H1_ELEMENT = document.querySelector('#listHeader h1')
-const INPUT_ELEMENT = document.querySelector('#txtNewTask')
+const TITLE_INPUT = document.querySelector('#headerTitle')
+const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
 
 const task = {
     id: '',
@@ -11,31 +11,33 @@ const task = {
 
 
 let state = {
-    listHeader: 'IHC',
+    listTitle: '',
     tasksList: []
 }
 
 init()
 
 function init(){
-    loadSavedTasks()
+    loadState()
     renderListHeader()
     renderTodoList()
-
+    
     document.querySelector('#addTaskForm').addEventListener('submit', handleSubmit)
     document.querySelector('#addTaskForm i').addEventListener('click', handleSubmit)
+
+    TITLE_INPUT.addEventListener('change', handleChangeTitle)
 }
 
 
 
-function loadSavedTasks(){
+function loadState(){
     const state_data = localStorage.getItem(LOCAL_STORE_STATE)
 
     if (state_data) state = JSON.parse(state_data)
     
 }
 
-function saveTasks(){
+function saveState(){
     localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
 }
 
@@ -68,20 +70,30 @@ function renderTodoList(){
 }
 
 function renderListHeader(){
-    H1_ELEMENT.innerText = state.listHeader || ''
+    TITLE_INPUT.value = state.listTitle || ''
 }
 
 
 
+async function handleChangeTitle(event){
+    event.preventDefault()
+
+    state.listTitle = TITLE_INPUT.value
+    saveState()
+
+    renderListHeader()
+
+}
+
 async function handleSubmit(event){
     event.preventDefault()
 
-    if (INPUT_ELEMENT.value == '') return '> ERRO: No task description entered'
+    if (NEW_TASK_INPUT.value == '') return '> ERRO: No task description entered'
 
     await addNewTask()
 
     renderTodoList()
-    INPUT_ELEMENT.value = ''
+    NEW_TASK_INPUT.value = ''
 }
 
 
@@ -90,14 +102,14 @@ function addNewTask(){
     
     const newTask = {
         id: newId,
-        description: INPUT_ELEMENT.value,
+        description: NEW_TASK_INPUT.value,
         status: 'open'
     }
     
     if (!state.tasksList) state.tasksList = []
     
     state.tasksList.push(newTask)
-    saveTasks()
+    saveState()
     
 }
 
@@ -117,7 +129,7 @@ function reverseTaskStatus(taskId){
         const newStatus = state.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
         state.tasksList[taskIndex].status = newStatus
 
-        saveTasks()
+        saveState()
     }
 
 }
@@ -138,6 +150,6 @@ function destroyTask(taskId){
 
     if (taskIndex >= 0) {
         state.tasksList.splice(taskIndex, 1)
-        saveTasks()
+        saveState()
     }
 }

@@ -176,11 +176,18 @@ body {
 #todoList .todoRow {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;    
+    justify-content: space-between;  
+    align-items: center;  
     font-size: 15px;
-    padding: 5px 0px;
+    padding: 5px;
     color: #495349;
     min-height: 35px;
+    border-radius: 5px;
+}
+
+#todoList .todoRow:hover {
+    background-color: rgba(144, 238, 144, 0.2);
+    color: darkgreen;
 }
 
 #todoList .todoRow label {
@@ -198,6 +205,6 @@ body {
 }
 
 #todoList .todoRow i:hover{
-    color: #047526;
+    color: red;
     cursor: pointer;
 }

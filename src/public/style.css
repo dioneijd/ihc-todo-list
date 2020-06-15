@@ -5,6 +5,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: roboto, sans-serif;
+    overflow: hidden;
 }
 
 *:focus {
@@ -21,25 +22,32 @@ body {
     justify-content: center;
     background-color: #3bb78f;
     background-image: linear-gradient(315deg, #3bb78f 0%, #0bab64 74%);
+    padding: 10px;
+    overflow: auto;
 }
 
 #container {
-    margin: 10px;
-    height: 90%;
-    min-height: 600px;
+    height: 100%;
+    min-height: 400px;
     width: 100%;
     min-width: 300px;
-    max-width: 500px;
+    max-width: 500px;   
     border-radius: 10px;
 
     background-color: whitesmoke;
     box-shadow: 0 7px 30px rgba(62, 9, 11, .3);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 
 #listHeader {
-    height: 120px;
+    min-height: 120px;
     width: 100%;
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -79,19 +87,30 @@ body {
 
 
 #content {
-    padding: 10px;
+    height: 100%;
+    width: 100%;
+    padding: 15px;
     padding-top: 20px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
 }
 
 
 #addTaskForm {
+    min-height: 35px;
+    width: 100%;
+    padding: 0 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0 10px;
+
     margin-bottom: 20px;
 
-    border-bottom: 1px solid #699973;    
+    border-bottom: 1px solid #699973;
 }
 
 #addTaskForm > * {
@@ -102,36 +121,62 @@ body {
 
 #addTaskForm input[type='text'] {
     width: 100%;
-    padding: 0 5px;
     font-size: 1.2rem;
 }
 
 #addTaskForm i {
     width: 35px;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     font-size: 20px;
     color: #8e979c;
     cursor: pointer;
 }
+
 #addTaskForm i:hover {
     color: #047526;
 }
 
 
-
 #todoList {
-    list-style: none;
     margin: 0 10px;
+    overflow: auto; 
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    scroll-margin: 50px 0 0 50px;
 }
+
+#todoList::-webkit-scrollbar {
+    width: 15px;
+}
+
+#todoList::-webkit-scrollbar:hover {
+    cursor:pointer;
+
+}
+  
+#todoList::-webkit-scrollbar-thumb {
+    background: seagreen;
+    border-radius: 2px;
+    border-left: 5px solid rgba(0, 0, 0, 0);
+    
+    height: 100px;
+    background-clip: padding-box;
+}
+#todoList::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(24, 71, 44)
+}
+
+
 
 #todoList .todoRow {
     display: flex;
     flex-direction: row;
     justify-content: space-between;    
     font-size: 15px;
-    padding: 5px 10px;
+    padding: 5px 0px;
     color: #495349;
     height: 35px;
 }
@@ -152,6 +197,5 @@ body {
 
 #todoList .todoRow i:hover{
     color: #047526;
+    cursor: pointer;
 }
-
-

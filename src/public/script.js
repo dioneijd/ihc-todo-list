@@ -2,6 +2,7 @@ const LOCAL_STORE_STATE = 'state_data'
 const UL_ELEMENT = document.querySelector('#todoList')
 const TITLE_INPUT = document.querySelector('#headerTitle')
 const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
+const BTN_IMPORT_STATE = document.querySelector('#btnImportState')
 const BTN_EXPORT_STATE = document.querySelector('#btnExportState')
 
 const task = {
@@ -28,6 +29,7 @@ function init(){
 
     TITLE_INPUT.addEventListener('change', handleChangeTitle)
     BTN_EXPORT_STATE.addEventListener('click', handleExportState)
+    BTN_IMPORT_STATE.addEventListener('change', handleImportState)
 }
 
 
@@ -39,8 +41,19 @@ async function loadState(){
     
 }
 
+async function importState(file, cb){
+    const reader = new FileReader()
+    
+    reader.onload = () => {        
+        state = JSON.parse(reader.result)
+        cb()
+    }
+
+    await reader.readAsText(file)
+}
+
 async function saveState(){
-    localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
+    await localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
 }
 
 async function exportState(){
@@ -90,6 +103,18 @@ function renderListHeader(){
 }
 
 
+async function handleImportState(event){
+    event.preventDefault()
+    const file = event.target.files[0]
+    
+    const callBack = () => {        
+        saveState()
+        renderListHeader()
+        renderTodoList()
+    }
+    
+    importState(file, callBack)
+}
 
 async function handleExportState(event){
     event.preventDefault()
@@ -154,7 +179,6 @@ function reverseTaskStatus(taskId){
 
         saveState()
     }
-
 }
 
 

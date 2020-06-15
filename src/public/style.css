@@ -218,16 +218,20 @@ body {
     align-items: center;    
 }
 
-#menu button {
-    background-color: transparent;
-    border: none;
+
+#menu label {
     cursor: pointer;
 }
 
-#menu svg {
+
+#menu label input {
+    display: none;
+}
+
+#menu label svg {
     fill: none;
     color: white;
 }
-#menu svg:hover {
+#menu label svg:hover {
     color: darkgreen;
 }

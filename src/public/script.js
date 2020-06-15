@@ -30,17 +30,31 @@ function init(){
 
 
 
-function loadState(){
+async function loadState(){
     const state_data = localStorage.getItem(LOCAL_STORE_STATE)
 
     if (state_data) state = JSON.parse(state_data)
     
 }
 
-function saveState(){
+async function saveState(){
     localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
 }
 
+async function exportState(){
+    const data = new Blob([JSON.stringify(state)], {type: 'text/plain'})
+    let fileUrl = await window.URL.createObjectURL(data)
+
+    var a = document.createElement("a")
+
+    a.href = fileUrl
+    a.download = 'todo_bkp_' + new Date().toLocaleString().replace(' ', '_')
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    window.URL.revokeObjectURL(fileUrl)
+}
 
 
 

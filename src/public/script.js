@@ -2,6 +2,7 @@ const LOCAL_STORE_STATE = 'state_data'
 const UL_ELEMENT = document.querySelector('#todoList')
 const TITLE_INPUT = document.querySelector('#headerTitle')
 const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
+const BTN_EXPORT_STATE = document.querySelector('#btnExportState')
 
 const task = {
     id: '',
@@ -26,6 +27,7 @@ function init(){
     document.querySelector('#addTaskForm i').addEventListener('click', handleSubmit)
 
     TITLE_INPUT.addEventListener('change', handleChangeTitle)
+    BTN_EXPORT_STATE.addEventListener('click', handleExportState)
 }
 
 
@@ -87,6 +89,13 @@ function renderListHeader(){
     TITLE_INPUT.value = state.listTitle || ''
 }
 
+
+
+async function handleExportState(event){
+    event.preventDefault()
+
+    exportState()
+}
 
 
 async function handleChangeTitle(event){

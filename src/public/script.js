@@ -105,6 +105,11 @@ function renderListHeader(){
 
 async function handleImportState(event){
     event.preventDefault()
+
+    if(!event.target.files[0]) return
+
+    if (!confirm('Essa operação irá apagar a sua atual lista de tarefas. \n \nVocê deseja continuar?')) return
+
     const file = event.target.files[0]
     
     const callBack = () => {        

@@ -60,7 +60,6 @@ body {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2)  ;
     text-align: center;
     text-transform: uppercase;
-
 }
 
 #listHeader input[type="text"]:hover {
@@ -68,15 +67,18 @@ body {
     border-style: dotted;
 }
 
-
 #listHeader input[type="text"]:focus {
     color: darkgreen;
     background-color: white;
     text-shadow: none;
 }
 
-
-
+#listHeader input[type="text"]::placeholder {
+    font-size: 18px;
+    font-weight: normal;
+    text-transform: none;
+    color: white;
+}
 
 #content {
     padding: 10px;

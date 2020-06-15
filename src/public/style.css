@@ -52,8 +52,6 @@ body {
     justify-content: center;
     align-items: center;
 
-    border-radius: 10px 10px 0 0;
-
     background-color: seagreen;
 }
 
@@ -207,4 +205,33 @@ body {
 #todoList .todoRow i:hover{
     color: red;
     cursor: pointer;
+}
+
+#menu {
+    height: 50px;
+    width: 100%;
+    background-color: seagreen;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;    
+}
+
+
+#menu label {
+    cursor: pointer;
+}
+
+
+#menu label input {
+    display: none;
+}
+
+#menu label svg {
+    fill: none;
+    color: white;
+}
+#menu label svg:hover {
+    color: darkgreen;
 }

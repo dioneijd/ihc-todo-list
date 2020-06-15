@@ -2,6 +2,8 @@ const LOCAL_STORE_STATE = 'state_data'
 const UL_ELEMENT = document.querySelector('#todoList')
 const TITLE_INPUT = document.querySelector('#headerTitle')
 const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
+const BTN_IMPORT_STATE = document.querySelector('#btnImportState')
+const BTN_EXPORT_STATE = document.querySelector('#btnExportState')
 
 const task = {
     id: '',
@@ -26,21 +28,48 @@ function init(){
     document.querySelector('#addTaskForm i').addEventListener('click', handleSubmit)
 
     TITLE_INPUT.addEventListener('change', handleChangeTitle)
+    BTN_EXPORT_STATE.addEventListener('click', handleExportState)
+    BTN_IMPORT_STATE.addEventListener('change', handleImportState)
 }
 
 
 
-function loadState(){
+async function loadState(){
     const state_data = localStorage.getItem(LOCAL_STORE_STATE)
 
     if (state_data) state = JSON.parse(state_data)
     
 }
 
-function saveState(){
-    localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
+async function importState(file, cb){
+    const reader = new FileReader()
+    
+    reader.onload = () => {        
+        state = JSON.parse(reader.result)
+        cb()
+    }
+
+    await reader.readAsText(file)
 }
 
+async function saveState(){
+    await localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
+}
+
+async function exportState(){
+    const data = new Blob([JSON.stringify(state)], {type: 'text/plain'})
+    let fileUrl = await window.URL.createObjectURL(data)
+
+    var a = document.createElement("a")
+
+    a.href = fileUrl
+    a.download = 'todo_bkp_' + new Date().toLocaleString().replace(' ', '_')
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    window.URL.revokeObjectURL(fileUrl)
+}
 
 
 
@@ -73,6 +102,30 @@ function renderListHeader(){
     TITLE_INPUT.value = state.listTitle || ''
 }
 
+
+async function handleImportState(event){
+    event.preventDefault()
+
+    if(!event.target.files[0]) return
+
+    if (!confirm('Essa operação irá apagar a sua atual lista de tarefas. \n \nVocê deseja continuar?')) return
+
+    const file = event.target.files[0]
+    
+    const callBack = () => {        
+        saveState()
+        renderListHeader()
+        renderTodoList()
+    }
+    
+    importState(file, callBack)
+}
+
+async function handleExportState(event){
+    event.preventDefault()
+
+    exportState()
+}
 
 
 async function handleChangeTitle(event){
@@ -131,7 +184,6 @@ function reverseTaskStatus(taskId){
 
         saveState()
     }
-
 }
 
 

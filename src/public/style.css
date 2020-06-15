@@ -180,7 +180,7 @@ body {
     font-size: 15px;
     padding: 5px 0px;
     color: #495349;
-    height: 35px;
+    min-height: 35px;
 }
 
 #todoList .todoRow label {

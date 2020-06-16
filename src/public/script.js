@@ -1,9 +1,9 @@
-const LOCAL_STORE_STATE = 'state_data'
+const LOCAL_STORE_LISTS = 'state_data'
 const UL_ELEMENT = document.querySelector('#todoList')
 const TITLE_INPUT = document.querySelector('#headerTitle')
 const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
-const BTN_IMPORT_STATE = document.querySelector('#btnImportState')
-const BTN_EXPORT_STATE = document.querySelector('#btnExportState')
+const BTN_IMPORT_LIST = document.querySelector('#btnImportList')
+const BTN_EXPORT_LIST = document.querySelector('#btnExportList')
 
 const task = {
     id: '',
@@ -12,7 +12,7 @@ const task = {
 }
 
 
-let state = {
+let list = {
     listTitle: '',
     tasksList: []
 }
@@ -20,7 +20,7 @@ let state = {
 init()
 
 function init(){
-    loadState()
+    loadList()
     renderListHeader()
     renderTodoList()
     
@@ -28,36 +28,40 @@ function init(){
     document.querySelector('#addTaskForm i').addEventListener('click', handleSubmit)
 
     TITLE_INPUT.addEventListener('change', handleChangeTitle)
-    BTN_EXPORT_STATE.addEventListener('click', handleExportState)
-    BTN_IMPORT_STATE.addEventListener('change', handleImportState)
+    BTN_EXPORT_LIST.addEventListener('click', handleExportList)
+    BTN_IMPORT_LIST.addEventListener('change', handleImportList)
 }
 
+async function loadLists(){
+    const items = Object.keys(localStorage)
 
+    setup.lists = items.filter(item => item.includes(LOCAL_STORE_LISTS))
+}
 
-async function loadState(){
-    const state_data = localStorage.getItem(LOCAL_STORE_STATE)
+async function loadList(){
+    const list_data = localStorage.getItem(LOCAL_STORE_LISTS)
 
-    if (state_data) state = JSON.parse(state_data)
+    if (list_data) list = JSON.parse(list_data)
     
 }
 
-async function importState(file, cb){
+async function importList(file, cb){
     const reader = new FileReader()
     
     reader.onload = () => {        
-        state = JSON.parse(reader.result)
+        list = JSON.parse(reader.result)
         cb()
     }
 
     await reader.readAsText(file)
 }
 
-async function saveState(){
-    await localStorage.setItem(LOCAL_STORE_STATE, JSON.stringify(state))
+async function saveList(){
+    await localStorage.setItem(LOCAL_STORE_LISTS, JSON.stringify(list))
 }
 
-async function exportState(){
-    const data = new Blob([JSON.stringify(state)], {type: 'text/plain'})
+async function exportList(){
+    const data = new Blob([JSON.stringify(list)], {type: 'text/plain'})
     let fileUrl = await window.URL.createObjectURL(data)
 
     var a = document.createElement("a")
@@ -77,9 +81,9 @@ function renderTodoList(){
 
     UL_ELEMENT.innerHTML = ''
 
-    if (!state.tasksList) return
+    if (!list.tasksList) return
 
-    state.tasksList.forEach(task => {
+    list.tasksList.forEach(task => {
         const newToDoRow = `
             <li class="todoRow" id="${task.id}">
                 <input type="checkbox" name="todo_${task.id}" id="todo_${task.id}" ${task.status == 'open' ? '' : 'checked'} >
@@ -99,11 +103,11 @@ function renderTodoList(){
 }
 
 function renderListHeader(){
-    TITLE_INPUT.value = state.listTitle || ''
+    TITLE_INPUT.value = list.listTitle || ''
 }
 
 
-async function handleImportState(event){
+async function handleImportList(event){
     event.preventDefault()
 
     if(!event.target.files[0]) return
@@ -113,26 +117,26 @@ async function handleImportState(event){
     const file = event.target.files[0]
     
     const callBack = () => {        
-        saveState()
+        saveList()
         renderListHeader()
         renderTodoList()
     }
     
-    importState(file, callBack)
+    importList(file, callBack)
 }
 
-async function handleExportState(event){
+async function handleExportList(event){
     event.preventDefault()
 
-    exportState()
+    exportList()
 }
 
 
 async function handleChangeTitle(event){
     event.preventDefault()
 
-    state.listTitle = TITLE_INPUT.value
-    saveState()
+    list.listTitle = TITLE_INPUT.value
+    saveList()
 
     renderListHeader()
 
@@ -159,10 +163,10 @@ function addNewTask(){
         status: 'open'
     }
     
-    if (!state.tasksList) state.tasksList = []
+    if (!list.tasksList) list.tasksList = []
     
-    state.tasksList.push(newTask)
-    saveState()
+    list.tasksList.push(newTask)
+    saveList()
     
 }
 
@@ -176,13 +180,13 @@ async function handleChangeTaskStatus(event){
 }
 
 function reverseTaskStatus(taskId){
-    const taskIndex = state.tasksList.findIndex(task => task.id == taskId)
+    const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
     console.log(taskIndex)
     if (taskIndex >= 0) {
-        const newStatus = state.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
-        state.tasksList[taskIndex].status = newStatus
+        const newStatus = list.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
+        list.tasksList[taskIndex].status = newStatus
 
-        saveState()
+        saveList()
     }
 }
 
@@ -198,10 +202,10 @@ async function handleDeleteTask(event){
 }
 
 function destroyTask(taskId){
-    const taskIndex = state.tasksList.findIndex(task => task.id == taskId)
+    const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
 
     if (taskIndex >= 0) {
-        state.tasksList.splice(taskIndex, 1)
-        saveState()
+        list.tasksList.splice(taskIndex, 1)
+        saveList()
     }
 }

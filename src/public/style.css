@@ -209,21 +209,27 @@ body {
 }
 
 #menu {
+    height: 60px;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     background-color: seagreen;
+    transition: height 0.5s;
 }
 
+
+#menu input {
+    display: none;
+}
 
 #lists {
     display: flex;
     flex-direction: row;
     height: 0;
     width: 100%;
-    padding: 5px;
+    padding: 10px 10px 0 10px;
     opacity: 0;
 
 }
@@ -234,10 +240,10 @@ body {
     align-items: center;
     color: white;
 
-    height: 50px;
+    height: 70px;
     width: 100px;
     border: 2px solid white;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     background-color: seagreen;
 }
@@ -247,9 +253,8 @@ body {
 }
 
 #lists .list + .list {
-    margin-left: 5px;
+    margin-left: 10px;
 }
-
 
 
 #menuButtons {
@@ -263,30 +268,30 @@ body {
     padding: 5px 0;
 }
 
-
 #menuButtons label {
     cursor: pointer;
-}
-
-
-#menuButtons label input {
-    display: none;
 }
 
 #menuButtons label svg {
     fill: none;
     color: white;
+    text-align: center;
 }
+
 #menuButtons label svg:hover {
     color: darkgreen;
 }
 
+
+
 #btnOpenMenu {
     display: none;
 }
+
 #btnOpenMenu:checked + #menu {
-    height: 70%;
+    height: 50%;
 }
+
 #btnOpenMenu:checked + #menu #lists {
     height: 100%;
     opacity: 100%;

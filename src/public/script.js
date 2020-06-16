@@ -1,4 +1,5 @@
-const LOCAL_STORE_LISTS = 'state_data'
+const LOCAL_STORE_LISTS = 'list_data'
+const LOCAL_STORE_SELECTED_LIST = 'selected_list'
 const UL_ELEMENT = document.querySelector('#todoList')
 const TITLE_INPUT = document.querySelector('#headerTitle')
 const NEW_TASK_INPUT = document.querySelector('#txtNewTask')
@@ -11,16 +12,20 @@ const task = {
     status: 'open'
 }
 
+let selectedList = -1
 
-let list = {
+let lists = [{
     listTitle: '',
     tasksList: []
-}
+}]
+
 
 init()
 
 function init(){
-    loadList()
+    loadLists()
+    selectedList = localStorage.getItem(LOCAL_STORE_SELECTED_LIST) || 0
+
     renderListHeader()
     renderTodoList()
     
@@ -34,33 +39,32 @@ function init(){
 
 async function loadLists(){
     const items = Object.keys(localStorage)
+    const lists_name = items.filter(item => item.includes(LOCAL_STORE_LISTS))
 
-    setup.lists = items.filter(item => item.includes(LOCAL_STORE_LISTS))
-}
-
-async function loadList(){
-    const list_data = localStorage.getItem(LOCAL_STORE_LISTS)
-
-    if (list_data) list = JSON.parse(list_data)
-    
+    lists = lists_name.map(list_name => 
+        JSON.parse(localStorage.getItem(list_name))
+    )
 }
 
 async function importList(file, cb){
     const reader = new FileReader()
     
     reader.onload = () => {        
-        list = JSON.parse(reader.result)
+        lists[selectedList] = JSON.parse(reader.result)
         cb()
     }
 
     await reader.readAsText(file)
 }
 
-async function saveList(){
+async function saveList(){    
+    const list = lists[selectedList]
     await localStorage.setItem(LOCAL_STORE_LISTS, JSON.stringify(list))
 }
 
 async function exportList(){
+    const list = lists[selectedList]
+    
     const data = new Blob([JSON.stringify(list)], {type: 'text/plain'})
     let fileUrl = await window.URL.createObjectURL(data)
 
@@ -78,6 +82,8 @@ async function exportList(){
 
 
 function renderTodoList(){
+
+    const list = lists[selectedList]
 
     UL_ELEMENT.innerHTML = ''
 
@@ -103,6 +109,8 @@ function renderTodoList(){
 }
 
 function renderListHeader(){
+    const list = lists[selectedList]
+
     TITLE_INPUT.value = list.listTitle || ''
 }
 
@@ -131,15 +139,15 @@ async function handleExportList(event){
     exportList()
 }
 
-
 async function handleChangeTitle(event){
     event.preventDefault()
+    
+    const list = lists[selectedList]
 
     list.listTitle = TITLE_INPUT.value
     saveList()
 
     renderListHeader()
-
 }
 
 async function handleSubmit(event){
@@ -153,23 +161,6 @@ async function handleSubmit(event){
     NEW_TASK_INPUT.value = ''
 }
 
-
-function addNewTask(){
-    const newId = Math.random().toString(36).substr(2, 9)
-    
-    const newTask = {
-        id: newId,
-        description: NEW_TASK_INPUT.value,
-        status: 'open'
-    }
-    
-    if (!list.tasksList) list.tasksList = []
-    
-    list.tasksList.push(newTask)
-    saveList()
-    
-}
-
 async function handleChangeTaskStatus(event){
     event.preventDefault()
 
@@ -178,19 +169,6 @@ async function handleChangeTaskStatus(event){
 
     renderTodoList()
 }
-
-function reverseTaskStatus(taskId){
-    const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
-    console.log(taskIndex)
-    if (taskIndex >= 0) {
-        const newStatus = list.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
-        list.tasksList[taskIndex].status = newStatus
-
-        saveList()
-    }
-}
-
-
 
 async function handleDeleteTask(event){
     event.preventDefault()
@@ -201,7 +179,40 @@ async function handleDeleteTask(event){
     renderTodoList()
 }
 
+function addNewTask(){
+    const newId = Math.random().toString(36).substr(2, 9)
+    
+    const newTask = {
+        id: newId,
+        description: NEW_TASK_INPUT.value,
+        status: 'open'
+    }
+    
+    const list = lists[selectedList]
+
+    if (!list.tasksList) list.tasksList = []
+    
+    list.tasksList.push(newTask)
+    saveList()
+    
+}
+
+function reverseTaskStatus(taskId){
+    const list = lists[selectedList]
+
+    const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
+    console.log(taskIndex)
+    if (taskIndex >= 0) {
+        const newStatus = list.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
+        list.tasksList[taskIndex].status = newStatus
+
+        saveList()
+    }
+}
+
 function destroyTask(taskId){
+    const list = lists[selectedList]
+
     const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
 
     if (taskIndex >= 0) {

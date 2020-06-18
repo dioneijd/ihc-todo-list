@@ -24,10 +24,13 @@ init()
 
 function init(){
     loadLists()
-    selectedList = localStorage.getItem(LOCAL_STORE_SELECTED_LIST) || 0
+
+    loadSelectedList()
+    if (selectedList == -1) addNewList()
 
     renderListHeader()
     renderTodoList()
+    renderLists()
     
     document.querySelector('#addTaskForm').addEventListener('submit', handleSubmit)
     document.querySelector('#addTaskForm i').addEventListener('click', handleSubmit)
@@ -35,15 +38,15 @@ function init(){
     TITLE_INPUT.addEventListener('change', handleChangeTitle)
     BTN_EXPORT_LIST.addEventListener('click', handleExportList)
     BTN_IMPORT_LIST.addEventListener('change', handleImportList)
+
 }
 
 async function loadLists(){
-    const items = Object.keys(localStorage)
-    const lists_name = items.filter(item => item.includes(LOCAL_STORE_LISTS))
+    lists = JSON.parse(localStorage.getItem(LOCAL_STORE_LISTS))
+}
 
-    lists = lists_name.map(list_name => 
-        JSON.parse(localStorage.getItem(list_name))
-    )
+async function loadSelectedList(){
+    selectedList = localStorage.getItem(LOCAL_STORE_SELECTED_LIST) || -1
 }
 
 async function importList(file, cb){
@@ -57,9 +60,12 @@ async function importList(file, cb){
     await reader.readAsText(file)
 }
 
-async function saveList(){    
-    const list = lists[selectedList]
-    await localStorage.setItem(LOCAL_STORE_LISTS, JSON.stringify(list))
+async function saveList(){
+    await localStorage.setItem(LOCAL_STORE_LISTS, JSON.stringify(lists))
+}
+
+async function saveSelectedList() {
+    await localStorage.setItem(LOCAL_STORE_SELECTED_LIST, selectedList)
 }
 
 async function exportList(){
@@ -80,13 +86,22 @@ async function exportList(){
 }
 
 
+function renderListHeader(){
+    const list = lists[selectedList]
+    
+    TITLE_INPUT.value = ''
+
+    if (!list) return
+    
+    TITLE_INPUT.value = list.listTitle || ''
+}
 
 function renderTodoList(){
-
     const list = lists[selectedList]
 
     UL_ELEMENT.innerHTML = ''
 
+    if (!list) return
     if (!list.tasksList) return
 
     list.tasksList.forEach(task => {
@@ -108,10 +123,24 @@ function renderTodoList(){
     allCheckboxElements.forEach(el => el.addEventListener('change', handleChangeTaskStatus))
 }
 
-function renderListHeader(){
-    const list = lists[selectedList]
 
-    TITLE_INPUT.value = list.listTitle || ''
+function renderLists(){
+    const new_list_element = document.querySelector('#newList')    
+    const lists_element = document.querySelector('#lists')
+
+    lists_element.innerHTML = ''
+    
+    lists.forEach(list => {
+        const list_box = `            
+            <div class="list" id="list_${list.id}">
+                <p>${list.listTitle}</p>
+            </div>
+        `
+        lists_element.innerHTML += list_box
+    })
+
+    lists_element.appendChild(new_list_element)
+    new_list_element.addEventListener('click', handleCreateNewList)
 }
 
 
@@ -148,6 +177,7 @@ async function handleChangeTitle(event){
     saveList()
 
     renderListHeader()
+    renderLists()
 }
 
 async function handleSubmit(event){
@@ -179,6 +209,38 @@ async function handleDeleteTask(event){
     renderTodoList()
 }
 
+async function handleCreateNewList(event){
+    event.preventDefault()
+
+    addNewList()
+
+    renderLists()
+}
+
+
+
+
+
+
+
+function addNewList(){
+    const newId = Math.random().toString(36).substr(2, 9)
+        
+    const newlist = {
+        id: newId,
+        listTitle: '',
+        tasksList: []
+    }
+    
+    lists.push(newlist)
+    selectedList = lists.length - 1
+    
+    saveList()    
+    saveSelectedList()
+}
+
+
+
 function addNewTask(){
     const newId = Math.random().toString(36).substr(2, 9)
     
@@ -201,7 +263,7 @@ function reverseTaskStatus(taskId){
     const list = lists[selectedList]
 
     const taskIndex = list.tasksList.findIndex(task => task.id == taskId)
-    console.log(taskIndex)
+
     if (taskIndex >= 0) {
         const newStatus = list.tasksList[taskIndex].status == 'open' ? 'closed' : 'open'
         list.tasksList[taskIndex].status = newStatus

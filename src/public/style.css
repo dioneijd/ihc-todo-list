@@ -226,12 +226,12 @@ body {
 
 #lists {
     display: flex;
-    flex-direction: row;
+    flex-direction: row ;
+    justify-content: flex-start;
     height: 0;
     width: 100%;
     padding: 10px 10px 0 10px;
     opacity: 0;
-
 }
 
 #lists .list {
@@ -254,6 +254,11 @@ body {
 
 #lists .list + .list {
     margin-left: 10px;
+}
+
+#lists .list p{
+    text-align: center;
+    text-transform: uppercase;
 }
 
 

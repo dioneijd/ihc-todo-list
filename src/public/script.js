@@ -132,12 +132,15 @@ function renderLists(){
     
     lists.forEach(list => {
         const list_box = `            
-            <div class="list" id="list_${list.id}">
+            <div class="list" id="${list.id}">
                 <p>${list.listTitle}</p>
             </div>
         `
         lists_element.innerHTML += list_box
     })
+
+    const allListElements = document.querySelectorAll('#lists .list')
+    allListElements.forEach(el => el.addEventListener('click', handleChangeList))
 
     lists_element.appendChild(new_list_element)
     new_list_element.addEventListener('click', handleCreateNewList)
@@ -214,9 +217,22 @@ async function handleCreateNewList(event){
 
     addNewList()
 
+    renderListHeader()
+    renderTodoList()
     renderLists()
 }
 
+async function handleChangeList(event){
+    event.preventDefault()
+
+    const listId = event.target.id
+    await changeListSelected(listId)
+
+    renderListHeader()
+    renderTodoList()
+    renderLists()
+
+}
 
 
 
@@ -233,13 +249,16 @@ function addNewList(){
     }
     
     lists.push(newlist)
-    selectedList = lists.length - 1
+    saveList()
     
-    saveList()    
-    saveSelectedList()
+    changeListSelected(newId)
 }
 
-
+function changeListSelected(listId){
+    const listIndex = lists.findIndex(list => list.id == listId)
+    if (listIndex >= 0) selectedList = listIndex
+    saveSelectedList()
+}
 
 function addNewTask(){
     const newId = Math.random().toString(36).substr(2, 9)
